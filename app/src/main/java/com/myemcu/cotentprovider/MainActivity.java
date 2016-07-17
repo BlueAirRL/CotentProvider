@@ -16,6 +16,9 @@ import android.widget.ListView;
 import android.widget.SimpleCursorAdapter;
 import android.widget.Toast;
 
+import android.provider.ContactsContract.CommonDataKinds.Phone;
+import android.provider.ContactsContract.Contacts;
+
 public class MainActivity extends AppCompatActivity {
 
     //定义向用户申请取得联系人的变量
@@ -48,8 +51,11 @@ public class MainActivity extends AppCompatActivity {
         // 获取内容解析器对象
         ContentResolver resolver = getContentResolver();
 
+        //                      编号              姓名                     号码
+        String[] projection = {Contacts._ID, Contacts.DISPLAY_NAME, Phone.NUMBER};
+
         // 查询所有联系人并取得游标cursor
-        Cursor cursor = resolver.query(ContactsContract.Contacts.CONTENT_URI,null,null,null,null);
+        Cursor cursor = resolver.query(Phone.CONTENT_URI, projection, null, null, null);
 
         // 处理每一笔资料，在LogCat中显示所有联系人记录
         /*while (cursor.moveToNext()) {
@@ -63,11 +69,11 @@ public class MainActivity extends AppCompatActivity {
         ListView list = (ListView) findViewById(R.id.list); // 获取ListView对象
         SimpleCursorAdapter adapter = new SimpleCursorAdapter(
                 this,                                                   // MainActivity
-                android.R.layout.simple_list_item_1,                    // SDK自带XML
+                android.R.layout.simple_list_item_2,                    // SDK自带XML
                 cursor,                                                 // 查询结果
-                new String[] {ContactsContract.Contacts.DISPLAY_NAME},  // 待显示内容
-                new int[] {android.R.id.text1},                         // 待显示格式
-                0                                                       // 不自动更新数据库(数据变动时)
+                new String[] {ContactsContract.Contacts.DISPLAY_NAME, Phone.NUMBER},  // 待显示内容
+                new int[] {android.R.id.text1, android.R.id.text2},     // 待显示格式
+                1                                                       // 自动更新数据库(数据变动时)
         );
         list.setAdapter(adapter);
 

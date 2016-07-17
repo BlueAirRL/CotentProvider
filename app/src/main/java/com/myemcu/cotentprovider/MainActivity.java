@@ -55,7 +55,7 @@ public class MainActivity extends AppCompatActivity {
         String[] projection = {Contacts._ID, Contacts.DISPLAY_NAME, Phone.NUMBER};
 
         // 查询所有联系人并取得游标cursor
-        Cursor cursor = resolver.query(Phone.CONTENT_URI, projection, null, null, null);
+        Cursor cursor = resolver.query(Contacts.CONTENT_URI, null, null, null, null);
 
         // 处理每一笔资料，在LogCat中显示所有联系人记录
         /*while (cursor.moveToNext()) {
@@ -71,7 +71,7 @@ public class MainActivity extends AppCompatActivity {
                 this,                                                   // MainActivity
                 android.R.layout.simple_list_item_2,                    // SDK自带XML
                 cursor,                                                 // 查询结果
-                new String[] {ContactsContract.Contacts.DISPLAY_NAME, Phone.NUMBER},  // 待显示内容
+                new String[] {Contacts.DISPLAY_NAME, Contacts.HAS_PHONE_NUMBER},  // 待显示内容
                 new int[] {android.R.id.text1, android.R.id.text2},     // 待显示格式
                 1                                                       // 自动更新数据库(数据变动时)
         );

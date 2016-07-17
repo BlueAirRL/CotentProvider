@@ -2,6 +2,7 @@ package com.myemcu.cotentprovider;
 
 import android.Manifest;
 import android.content.ContentResolver;
+import android.content.Context;
 import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.provider.ContactsContract;
@@ -12,8 +13,10 @@ import android.support.v7.app.AppCompatActivity;
 import static android.Manifest.permission.*;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.View;
 import android.widget.ListView;
 import android.widget.SimpleCursorAdapter;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import android.provider.ContactsContract.CommonDataKinds.Phone;
@@ -74,7 +77,37 @@ public class MainActivity extends AppCompatActivity {
                 new String[] {Contacts.DISPLAY_NAME, Contacts.HAS_PHONE_NUMBER},  // 待显示内容
                 new int[] {android.R.id.text1, android.R.id.text2},     // 待显示格式
                 1                                                       // 自动更新数据库(数据变动时)
-        );
+        ){
+            // 在此处,定制化显示所有联系人(包含无号码联系人),Ctrl+O
+            @Override
+            public void bindView(View view, Context context, Cursor cursor) {
+                super.bindView(view, context, cursor);
+
+                // 注意此处写法
+                TextView phone = (TextView) view.findViewById(android.R.id.text2);
+
+                if (cursor.getInt(cursor.getColumnIndex(Contacts.HAS_PHONE_NUMBER))==0) {
+                    phone.setText("无号码");
+                }
+                else {
+                    int id = cursor.getInt(cursor.getColumnIndex(Contacts._ID));
+
+                    Cursor pCursor = getContentResolver().query(
+                            Phone.CONTENT_URI,
+                            null,
+                            Phone.CONTACT_ID+"=?",
+                            new String[] {String.valueOf(id)},
+                            null);
+
+                    if (pCursor.moveToFirst()) {
+                        String number = pCursor.getString(
+                                pCursor.getColumnIndex(Phone.DATA)
+                        );
+                        phone.setText(number);
+                    }
+                }
+            }
+        };
         list.setAdapter(adapter);
 
     }

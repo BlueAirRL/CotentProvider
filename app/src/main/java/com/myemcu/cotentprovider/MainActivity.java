@@ -12,6 +12,8 @@ import android.support.v7.app.AppCompatActivity;
 import static android.Manifest.permission.*;
 import android.os.Bundle;
 import android.util.Log;
+import android.widget.ListView;
+import android.widget.SimpleCursorAdapter;
 import android.widget.Toast;
 
 public class MainActivity extends AppCompatActivity {
@@ -42,17 +44,33 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void readContacts() {
+
         // 获取内容解析器对象
         ContentResolver resolver = getContentResolver();
+
         // 查询所有联系人并取得游标cursor
         Cursor cursor = resolver.query(ContactsContract.Contacts.CONTENT_URI,null,null,null,null);
-        // 处理每一笔资料
-        while (cursor.moveToNext()) {
+
+        // 处理每一笔资料，在LogCat中显示所有联系人记录
+        /*while (cursor.moveToNext()) {
             int id = cursor.getInt(cursor.getColumnIndex(ContactsContract.Contacts._ID));
             String name = cursor.getString(cursor.getColumnIndex(ContactsContract.Contacts.DISPLAY_NAME));
             //Toast.makeText(this,id+"/"+name,Toast.LENGTH_SHORT).show();
-            Log.d("RECORD",id+"/"+name);    // 在LogCat中显示所有联系人记录
-        }
+            Log.d("RECORD",id+"/"+name);
+        }*/
+
+        // 将数据库查询的结果cursor显示在ListView的每一列上
+        ListView list = (ListView) findViewById(R.id.list); // 获取ListView对象
+        SimpleCursorAdapter adapter = new SimpleCursorAdapter(
+                this,                                                   // MainActivity
+                android.R.layout.simple_list_item_1,                    // SDK自带XML
+                cursor,                                                 // 查询结果
+                new String[] {ContactsContract.Contacts.DISPLAY_NAME},  // 待显示内容
+                new int[] {android.R.id.text1},                         // 待显示格式
+                0                                                       // 不自动更新数据库(数据变动时)
+        );
+        list.setAdapter(adapter);
+
     }
 
     @Override//重写权限处理的实现方法
